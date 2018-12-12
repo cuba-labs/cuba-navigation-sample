@@ -56,4 +56,14 @@ public class Location extends StandardEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return name +
+                " (" + getType() + "). " +
+                "Capacity: " + capacity + " " +
+                (stars != null
+                        ? "Rating: " + stars
+                        : "");
+    }
 }

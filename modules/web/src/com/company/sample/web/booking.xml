@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://caption"
+        messagesPack="com.company.sample.web">
+
+    <data>
+        <collection id="locations"
+                    class="com.company.sample.entity.Location"
+                    view="_local">
+            <loader>
+                <query>
+                    <![CDATA[
+                        select l from sample_Location l
+                    ]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+
+    <layout spacing="true">
+        <hbox expand="resultsBox"
+              spacing="true"
+              height="100%"
+              width="100%">
+            <groupBox caption="Filters"
+                      spacing="true"
+                      width="AUTO">
+                <grid spacing="true">
+                    <columns>
+                        <column/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <textField caption="Name"
+                                       id="nameFilter"
+                                       inputPrompt="House on the seaside"/>
+
+                        </row>
+                        <row>
+                            <lookupField caption="Type"
+                                         id="typeFilter"
+                                         optionsEnum="com.company.sample.entity.LocationType"
+                                         nullName="Not important"/>`
+                        </row>
+                        <row>
+                            <textField caption="Capacity"
+                                       id="capacityFilter"
+                                       datatype="int"/>
+                        </row>
+                        <row>
+                            <lookupField caption="Stars"
+                                         id="starsFilter"
+                                         nullName="Not important"/>
+                        </row>
+                    </rows>
+                </grid>
+
+                <hbox spacing="true">
+                    <button caption="Apply"
+                            stylename="primary"
+                            id="applyFiltersBtn"/>
+
+                    <button caption="Reset"
+                            id="resetFiltersBtn"/>
+                </hbox>
+            </groupBox>
+
+            <scrollBox id="resultsBox"
+                       height="100%"
+                       caption="Results:"
+                       spacing="true"/>
+        </hbox>
+    </layout>
+</window>
