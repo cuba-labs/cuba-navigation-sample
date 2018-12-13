@@ -76,7 +76,7 @@ is shown (for example, when a screen is navigated with some params).
 Open the following link when the sample is running to show hotels available for
 booking with rating greater than "4":
 
-[localhost:8080/app/#main/booking?type=hotel&stars=4](localhost:8080/app/#main/booking?type=hotel&stars=4) 
+[http://localhost:8080/app/#main/booking?type=hotel&stars=4](http://localhost:8080/app/#main/booking?type=hotel&stars=4) 
 
 
 ## Screenshot
