@@ -5,6 +5,7 @@ import com.company.sample.entity.LocationType;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.UiComponents;
+import com.haulmont.cuba.gui.UrlRouting;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.navigation.UrlParamsChangedEvent;
@@ -12,7 +13,6 @@ import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.UiDescriptor;
-import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.theme.HaloTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -46,19 +46,30 @@ public class Booking extends Screen {
     private UiComponents uiComponents;
     @Inject
     private Messages messages;
+    @Inject
+    private UrlRouting urlRouting;
+
+    private boolean initialized = false;
 
     @Subscribe
     protected void onAfterShow(AfterShowEvent event) {
-        getScreenData().loadAll();
+        if (!initialized) {
+            getScreenData().loadAll();
 
-        initFilters();
-        updateUrl();
-        filterResults();
+            initFilters(null, LocationType.COUNTRY_HOUSE, 6, 3);
+            filterResults();
+
+            updateUrl();
+        }
     }
 
     @Subscribe
     protected void onUrlParamsChanged(UrlParamsChangedEvent event) {
-        getScreenData().loadAll();
+        if (!initialized) {
+            initialized = true;
+
+            getScreenData().loadAll();
+        }
 
         Map<String, String> params = event.getParams();
 
@@ -67,6 +78,7 @@ public class Booking extends Screen {
         Integer capacity = NumberUtils.toInt(params.get("capacity"));
         Integer stars = NumberUtils.toInt(params.get("stars"));
 
+        initFilters(name, locationType, capacity, stars);
         filterResults(name, locationType, capacity, stars);
     }
 
@@ -84,6 +96,7 @@ public class Booking extends Screen {
         starsFilter.setValue(null);
 
         filterResults("", null, null, null);
+        updateUrl();
     }
 
     private void updateUrl() {
@@ -107,15 +120,11 @@ public class Booking extends Screen {
             params.put("stars", stars.toString());
         }
 
-        AppUI.getCurrent().getUrlRouting()
-                .replaceState(this, params);
+        urlRouting.replaceState(this, params);
     }
 
     private void filterResults() {
-        filterResults(nameFilter.getValue(),
-                typeFilter.getValue(),
-                capacityFilter.getValue(),
-                starsFilter.getValue());
+        filterResults(nameFilter.getValue(), typeFilter.getValue(), capacityFilter.getValue(), starsFilter.getValue());
     }
 
     private void filterResults(String name, LocationType locationType, Integer capacity, Integer stars) {
@@ -129,11 +138,12 @@ public class Booking extends Screen {
         showResults(filtered);
     }
 
-    private void initFilters() {
-        typeFilter.setValue(LocationType.COUNTRY_HOUSE);
-        capacityFilter.setValue(6);
+    private void initFilters(String name, LocationType locationType, Integer capacity, Integer stars) {
+        nameFilter.setValue(name);
+        typeFilter.setValue(locationType);
+        capacityFilter.setValue(capacity);
         starsFilter.setOptionsList(Arrays.asList(1, 2, 3, 4, 5));
-        starsFilter.setValue(3);
+        starsFilter.setValue(stars);
     }
 
     private void showResults(Collection<Location> locations) {
